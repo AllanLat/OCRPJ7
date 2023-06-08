@@ -1,0 +1,14 @@
+{
+  "name": "backend-projet7",
+  "version": "1.0.0",
+  "description": "Projet 7 openClassRoom",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Allan Latruffe",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
