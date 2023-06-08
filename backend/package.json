@@ -4,11 +4,12 @@
   "description": "Projet 7 openClassRoom",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node_modules/.bin/nodemon"
   },
   "author": "Allan Latruffe",
   "license": "ISC",
-  "dependencies": {
+  "devDependencies": {
     "nodemon": "^2.0.22"
   }
 }
