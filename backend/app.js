@@ -1,4 +1,6 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+
 
 const app = express();
 
@@ -9,9 +11,12 @@ app.use((req, res, next) => {
     next();
   });
 
+app.use(bodyParser.json());
+
+
 
 app.post('/api/auth/signup', (req, res, next) => {
-    console.log(req.email);
+    console.log(req.body.email);
     res.status(201).json({
         message: 'User created successfully',
     });
