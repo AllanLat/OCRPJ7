@@ -1,8 +1,17 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
-
+const password = process.env.DB_PASSWORD
 const app = express();
+
+mongoose.connect('mongodb+srv://allanlatruffe:' + password + '@cluster007.mslq3lf.mongodb.net/?retryWrites=true&w=majority',
+  { useNewUrlParser: true,
+    useUnifiedTopology: true })
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
