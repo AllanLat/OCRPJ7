@@ -1,6 +1,7 @@
 // Controller 
 const Book = require('../models/book');
 
+
 exports.viewBooks = (req, res, next) => {
     Book.find()
         .then(books => res.status(200).json(books))
@@ -15,6 +16,7 @@ exports.viewBook = (req, res, next) => {
 
 exports.addBook = (req, res, next) => {
     delete req.body._id;
+    console.log(req);
     const book = new Book({
         ...req.body
     });

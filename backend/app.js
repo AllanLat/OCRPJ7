@@ -1,12 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
 
-// Ajout des modèles de donner.
+// Ajout des routes.
+const userRoutes = require('./Routes/users');
 const bookRoutes = require('./Routes/books');
+
 
 // Récupération du content .ENV
 dotenv.config();
@@ -21,7 +22,6 @@ mongoose.connect(`mongodb+srv://allanlatruffe:${password}@application7.7qaaleg.m
 
 // Ajout des middlewares
 app.use(express.json());
-app.use(bodyParser.json());
 
 // Ajout des En-têtes pour eviter les erreur cors
 app.use((req, res, next) => {
@@ -31,12 +31,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Gestion du token et admin
-
-
-
-// Route en dessou important
+// Appel des routes
+app.use("/api/auth", userRoutes);
 app.use("/api/books", bookRoutes);
 
 
-module.exports = app;
+module.exports = app; 
