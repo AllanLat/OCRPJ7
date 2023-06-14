@@ -1,12 +1,12 @@
 const express = require('express');
-
-
 const mongoose = require('mongoose');
 
-const bookRoutes = require('./Routes/books');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
+
+// Ajout des modèles de donner.
+const bookRoutes = require('./Routes/books');
 
 // Récupération du content .ENV
 dotenv.config();
