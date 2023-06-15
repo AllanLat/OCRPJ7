@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const app = express();
 
 // Ajout des routes.
 const userRoutes = require('./Routes/users');
 const bookRoutes = require('./Routes/books');
+const path = require('path');
 
 
 // Récupération du content .ENV
@@ -22,6 +24,11 @@ mongoose.connect(`mongodb+srv://allanlatruffe:${password}@application7.7qaaleg.m
 
 // Ajout des middlewares
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.raw());
 
 // Ajout des En-têtes pour eviter les erreur cors
 app.use((req, res, next) => {
@@ -30,6 +37,8 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
 });
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Appel des routes
 app.use("/api/auth", userRoutes);
