@@ -21,7 +21,7 @@ exports.addBook = (req, res, next) => {
 
    const book = new Book({
     ...bookObject,
-    userId: req.auth.userId,
+    userId: req.auth.user_Id,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
    });
 
@@ -32,39 +32,44 @@ exports.addBook = (req, res, next) => {
 }
 
 exports.updateBook = (req, res, next) => {
-    if(!req.file){
-        Book.findByIdAndUpdate({_id: req.params.id}, {
-        ...req.body,
-    })
-    .then(res.status(200).json({msg: "Livre modifié"}))
-    } else {
-        
-        const bodyBook = JSON.parse(req.body.book)
-        
-        
-        Book.findByIdAndUpdate({_id: req.params.id}, {
-            title: bodyBook.title,
-            author: bodyBook.author,
-            year: bodyBook.year,
-            genre: bodyBook.genre,
-            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+
+    // Si file existe alors on traite le formData sinon on traite directement le body
+    const bookObject = req.file ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+
+    delete bookObject._userId;
+
+
+    Book.findOne({_id: req.params.id})
+        .then((book) => {
+            if (book.userId != req.auth.user_Id) {
+                res.status(401).json({ message : 'Not authorized'});
+            } else {
+                const filename = book.imageUrl.split('/images/')[1];
+                // Pour limiter la taille du server on supprime l'image qui n'est plus utilisé
+                fs.unlink(`./images/${filename}`, () => {
+                    Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
+                    .then(() => res.status(200).json({message : 'Objet modifié!'}))
+                    .catch(error => res.status(401).json({ error }));    });
+              
+            }
         })
-        .then(res.status(200).json({msg: "Livre modifié avec succès"})) 
-        .catch(() => {
-            res.status(400).json({msg: "Erreur lors de la modification"})
-        })
-    } 
-     }
+        .catch((error) => {
+            res.status(400).json({ error });
+        });
+}
 
 
 exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
         .then(book => {
-            if (book.userId != req.auth.userId) {
+            if (book.userId != req.auth.user_Id) {
                 res.status(401).json({message: 'Not authorized'});
             } else {
                 const filename = book.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, () => {
+                fs.unlink(`./images/${filename}`, () => {
                     Book.deleteOne({_id: req.params.id})
                         .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
                         .catch(error => res.status(401).json({ error }));

@@ -28,7 +28,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(bodyParser.raw());
 
 // Ajout des En-têtes pour eviter les erreur cors
 app.use((req, res, next) => {
