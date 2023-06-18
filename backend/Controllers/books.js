@@ -68,18 +68,59 @@ exports.updateBook = (req, res, next) => {
 exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
         .then(book => {
-            if (book.userId != req.auth.user_Id) {
-                res.status(401).json({message: 'Not authorized'});
-            } else {
+            // if (book.userId != req.auth.user_Id) {
+            //     res.status(401).json({message: 'Not authorized'});
+            // } else {
                 const filename = book.imageUrl.split('/images/')[1];
                 fs.unlink(`./images/${filename}`, () => {
                     Book.deleteOne({_id: req.params.id})
                         .then(() => { res.status(200).json({message: 'Objet supprimé !'})})
                         .catch(error => res.status(401).json({ error }));
                 });
-            }
+            // }
         })
         .catch( error => {
             res.status(500).json({ error });
         });
     }
+
+
+    exports.rateBook = (req, res, next) => {
+        Book.findOne({ _id: req.params.id })
+          .then((book) => {
+            if (book.ratings.userId === req.auth.user_Id) {
+              res.status(401).json({ message: 'Not authorized' });
+            } else {
+             
+              // On ajoute la nouvelle note et la nouvelle note moyenne
+              const newRating = {
+                userId: req.body.userId,
+                grade: req.body.rating,
+              }; 
+
+              book.ratings.push(newRating);
+          
+              // On calcule la nouvelle note moyenne
+              let sum = 0;
+              for (let i = 0; i < book.ratings.length; i++) {
+                sum += book.ratings[i].grade;
+              }
+
+              let avg = sum / book.ratings.length;
+              book.averageRating = avg.toFixed(2);
+      
+              // On sauvegarde le livre mis à jour
+              book.save()
+                .then((updatedBook) => {
+                  res.status(200).json(updatedBook);
+                })
+                .catch((error) => {
+                  res.status(500).json({ error });
+                });
+            }
+          })
+          .catch((error) => {
+            res.status(500).json({ error });
+          });
+      };
+      
