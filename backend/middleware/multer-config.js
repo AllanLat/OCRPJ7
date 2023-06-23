@@ -17,6 +17,16 @@ const storage = multer.diskStorage({
     }
 
 })
-
-module.exports = multer({ storage }).single('image');
-
+const fileFilter = (req, file, cb) => {
+    if (MIME_TYPES[file.mimetype]) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type'));
+    }
+  };
+  
+  module.exports = multer({
+    storage,
+    limits: { fileSize: 4 * 1024 * 1024 }, // Limite à 4 Mo
+    fileFilter,
+  }).single('image');
